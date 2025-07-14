@@ -22,6 +22,18 @@ void main() async {
     debugPrint = (String? message, {int? wrapWidth}) {};
   }
   
+  // Configurar el manejo global de errores sin exponer información
+  ErrorWidget.builder = (FlutterErrorDetails details) {
+    return const Material(
+      child: Center(
+        child: Text(
+          'An error occurred. Please restart the app.',
+          style: TextStyle(color: Colors.red),
+        ),
+      ),
+    );
+  };
+  
   runApp(const SecureNotesApp());
 }
 
@@ -110,21 +122,6 @@ class SecureNotesApp extends StatelessWidget {
       // MITIGACIÓN M2: Suministro de código inseguro
       // No hardcodear rutas o configuraciones sensibles
       home: const SecureAppWrapper(),
-      
-      // Manejo global de errores sin exponer información
-      builder: (context, child) {
-        ErrorWidget.builder = (FlutterErrorDetails details) {
-          return const Material(
-            child: Center(
-              child: Text(
-                'An error occurred. Please restart the app.',
-                style: TextStyle(color: Colors.red),
-              ),
-            ),
-          );
-        };
-        return child ?? const SizedBox.shrink();
-      },
     );
   }
 }
