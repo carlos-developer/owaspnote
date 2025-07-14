@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- MITIGACIÓN M3: Comunicación insegura -->
+<!-- Configuración de seguridad de red para prevenir comunicación no cifrada -->
+<network-security-config>
+    <!-- Configuración base - no permite texto claro -->
+    <base-config cleartextTrafficPermitted="false">
+        <trust-anchors>
+            <!-- Solo confiar en CAs del sistema -->
+            <certificates src="system" />
+        </trust-anchors>
+    </base-config>
+    
+    <!-- Configuración específica del dominio con certificate pinning -->
+    <domain-config>
+        <domain includeSubdomains="true">api.securenotesapp.com</domain>
+        
+        <!-- Certificate pinning para el dominio de la API -->
+        <pin-set expiration="2025-12-31">
+            <!-- SHA-256 del certificado del servidor -->
+            <pin digest="SHA-256">AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</pin>
+            <!-- SHA-256 del certificado de respaldo -->
+            <pin digest="SHA-256">BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB=</pin>
+        </pin-set>
+        
+        <trust-anchors>
+            <certificates src="system" />
+        </trust-anchors>
+    </domain-config>
+    
+    <!-- IMPORTANTE: No permitir certificados de usuario en release -->
+    <!-- Esto previene ataques MITM con certificados instalados por el usuario -->
+    <debug-overrides>
+        <trust-anchors>
+            <!-- En debug permite certificados de usuario para testing -->
+            <certificates src="user" />
+        </trust-anchors>
+    </debug-overrides>
+</network-security-config>
+
+<!-- 
+MITIGACIÓN M3: Comunicación insegura
+Esta configuración:
+1. Deshabilita todo tráfico HTTP (cleartext)
+2. Implementa certificate pinning para la API
+3. Solo confía en CAs del sistema en producción
+4. Previene ataques MITM
+
+HERRAMIENTAS DE PENTESTING que esta configuración mitiga:
+- Burp Suite con certificado instalado
+- Charles Proxy
+- MITM Proxy
+- Wireshark para captura de tráfico no cifrado
+-->
