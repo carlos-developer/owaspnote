@@ -1,0 +1,131 @@
+version: '3.8'
+
+services:
+  # Jenkins Master
+  jenkins:
+    image: jenkins/jenkins:lts
+    container_name: owaspnote-jenkins
+    privileged: true
+    user: root
+    ports:
+      - "8080:8080"
+      - "50000:50000"
+    volumes:
+      - jenkins_home:/var/jenkins_home
+      - /var/run/docker.sock:/var/run/docker.sock
+      - ./scripts:/var/jenkins_home/scripts:ro
+    environment:
+      - JENKINS_OPTS=--prefix=/jenkins
+      - JAVA_OPTS=-Xmx2048m -Dhudson.plugins.git.GitSCM.ALLOW_LOCAL_CHECKOUT=true
+    networks:
+      - cicd-network
+    restart: unless-stopped
+
+  # SonarQube
+  sonarqube:
+    image: sonarqube:9-community
+    container_name: owaspnote-sonarqube
+    ports:
+      - "9000:9000"
+    environment:
+      - SONAR_ES_BOOTSTRAP_CHECKS_DISABLE=true
+      - SONAR_SEARCH_JAVAADDITIONALOPTS=-Xmx512m -Xms512m
+      - SONAR_CE_JAVAADDITIONALOPTS=-Xmx512m -Xms128m
+      - SONAR_WEB_JAVAADDITIONALOPTS=-Xmx512m -Xms128m
+    volumes:
+      - sonarqube_data:/opt/sonarqube/data
+      - sonarqube_extensions:/opt/sonarqube/extensions
+      - sonarqube_logs:/opt/sonarqube/logs
+    networks:
+      - cicd-network
+    depends_on:
+      - postgres
+    restart: unless-stopped
+
+  # PostgreSQL for SonarQube
+  postgres:
+    image: postgres:13
+    container_name: owaspnote-postgres
+    environment:
+      - POSTGRES_USER=sonar
+      - POSTGRES_PASSWORD=sonar
+      - POSTGRES_DB=sonarqube
+    volumes:
+      - postgresql_data:/var/lib/postgresql/data
+    networks:
+      - cicd-network
+    restart: unless-stopped
+
+  # JFrog Artifactory OSS
+  artifactory:
+    image: releases-docker.jfrog.io/jfrog/artifactory-oss:latest
+    container_name: owaspnote-artifactory
+    ports:
+      - "8081:8081"
+      - "8082:8082"
+    volumes:
+      - artifactory_data:/var/opt/jfrog/artifactory
+    environment:
+      - JF_ROUTER_ENTRYPOINTS_EXTERNALPORT=8082
+    networks:
+      - cicd-network
+    restart: unless-stopped
+
+  # Flutter CI Build Agent
+  flutter-ci:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: owaspnote-flutter-ci
+    volumes:
+      - ../:/workspace
+      - flutter_pub_cache:/home/flutter/.pub-cache
+      - gradle_cache:/home/flutter/.gradle
+    environment:
+      - PUB_CACHE=/home/flutter/.pub-cache
+      - GRADLE_USER_HOME=/home/flutter/.gradle
+    networks:
+      - cicd-network
+    command: tail -f /dev/null
+    restart: unless-stopped
+
+  # Nginx Reverse Proxy
+  nginx:
+    image: nginx:alpine
+    container_name: owaspnote-nginx
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./ssl:/etc/nginx/ssl:ro
+    networks:
+      - cicd-network
+    depends_on:
+      - jenkins
+      - sonarqube
+      - artifactory
+    restart: unless-stopped
+
+volumes:
+  jenkins_home:
+    name: owaspnote_jenkins_home
+  sonarqube_data:
+    name: owaspnote_sonarqube_data
+  sonarqube_extensions:
+    name: owaspnote_sonarqube_extensions
+  sonarqube_logs:
+    name: owaspnote_sonarqube_logs
+  postgresql_data:
+    name: owaspnote_postgresql_data
+  artifactory_data:
+    name: owaspnote_artifactory_data
+  flutter_pub_cache:
+    name: owaspnote_flutter_pub_cache
+  gradle_cache:
+    name: owaspnote_gradle_cache
+
+networks:
+  cicd-network:
+    name: owaspnote_cicd_network
+    driver: bridge
