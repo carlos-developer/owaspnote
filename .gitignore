@@ -43,3 +43,46 @@ app.*.map.json
 /android/app/debug
 /android/app/profile
 /android/app/release
+
+# Security - Local configuration files
+android/local.properties
+**/local.properties
+
+# Environment and config files
+**/*.env
+**/*.env.*
+.env
+.env.*
+
+# Keys and certificates
+**/*.pem
+**/*.p12
+**/*.jks
+**/*.keystore
+**/*.key
+**/*.cer
+**/*.crt
+**/*.der
+
+# Credentials and secrets
+**/credentials.*
+**/secrets.*
+**/apikeys.*
+**/*password*
+**/*secret*
+**/private/*
+
+# Chromedriver binaries
+chromedriver/
+**/chromedriver
+
+# Build directories
+build/
+**/build/
+
+# Temporary files
+*.tmp
+*.temp
+*.bak
+*.backup
+*.cache
