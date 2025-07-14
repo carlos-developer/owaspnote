@@ -16,7 +16,22 @@ The project has integration tests in the following locations:
 
 ## Running Integration Tests
 
-### Method 1: Run on Physical Device (Recommended)
+### Method 1: Run on Web Browser (Chrome)
+
+```bash
+# Run all tests on Chrome
+./run_integration_tests.sh --web
+
+# Run in headless mode
+./run_integration_tests.sh --web --headless
+
+# Or use the dedicated web script
+./run_integration_tests_web.sh
+```
+
+See [WEB_INTEGRATION_TESTS.md](WEB_INTEGRATION_TESTS.md) for detailed web testing instructions.
+
+### Method 2: Run on Physical Device (Recommended for mobile)
 
 ```bash
 # Check available devices
@@ -42,7 +57,7 @@ flutter emulators --launch <emulator_id>
 flutter test integration_test/
 ```
 
-### Method 3: Run as Unit Tests
+### Method 4: Run as Unit Tests
 
 For tests in the `/test/integration/` folder:
 

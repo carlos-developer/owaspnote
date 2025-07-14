@@ -2,6 +2,13 @@
 
 # Script to run OWASP Note integration tests
 
+# Check for command line arguments
+if [ "$1" == "--web" ] || [ "$1" == "--chrome" ]; then
+    echo "🌐 Redirecting to web integration tests..."
+    ./run_integration_tests_web.sh "${@:2}"
+    exit $?
+fi
+
 echo "🚀 Starting OWASP Note Integration Tests..."
 echo "==========================================="
 
@@ -64,3 +71,6 @@ else
 fi
 
 echo -e "\n${GREEN}✅ Integration tests completed!${NC}"
+echo -e "\n${YELLOW}💡 Tip: To run tests on web/Chrome, use:${NC}"
+echo -e "${YELLOW}   ./run_integration_tests.sh --web${NC}"
+echo -e "${YELLOW}   ./run_integration_tests.sh --web --headless${NC}"
