@@ -30,7 +30,7 @@ void main() {
     // Datos de prueba únicos para evitar conflictos
     final testTimestamp = DateTime.now().millisecondsSinceEpoch;
     final testUsername = 'testuser_$testTimestamp';
-    final testEmail = 'test_${testTimestamp}@example.com';
+    final testEmail = 'test_$testTimestamp@example.com';
     final testPassword = 'SecurePass123!';
     final weakPassword = '123'; // Para probar validación
     final sqlInjectionAttempt = "admin'; DROP TABLE users; --";
@@ -84,14 +84,14 @@ void main() {
         await tester.pumpWidget(const SecureNotesApp());
         await tester.pumpAndSettle(const Duration(seconds: 2));
 
-        print('🚀 [E2E] Iniciando test de registro y autenticación...');
+        // print('🚀 [E2E] Iniciando test de registro y autenticación...');
 
         // Verificar que inicia en LoginScreen
         expect(find.text('Login'), findsAtLeastNWidgets(1));
         expect(find.text('Username'), findsOneWidget);
         expect(find.text('Password'), findsOneWidget);
         
-        print('✅ [E2E] LoginScreen cargada correctamente');
+        // print('✅ [E2E] LoginScreen cargada correctamente');
 
         // === PHASE 2: NAVEGACIÓN A REGISTRO ===
         await tester.tap(find.text('Don\'t have an account? Register'));
@@ -104,12 +104,12 @@ void main() {
         expect(find.text('Password'), findsAtLeastNWidgets(1));
         expect(find.text('Confirm Password'), findsOneWidget);
         
-        print('✅ [E2E] RegisterScreen cargada correctamente');
+        // print('✅ [E2E] RegisterScreen cargada correctamente');
 
         // === PHASE 3: VALIDACIÓN DE SEGURIDAD EN REGISTRO ===
         
         // Test M1: Validación de contraseña débil
-        print('🔒 [E2E] Probando validación de contraseña débil...');
+        // print('🔒 [E2E] Probando validación de contraseña débil...');
         await tester.enterText(find.byType(TextFormField).at(0), testUsername);
         await tester.enterText(find.byType(TextFormField).at(1), testEmail);
         await tester.enterText(find.byType(TextFormField).at(2), weakPassword);
@@ -121,30 +121,30 @@ void main() {
         
         // Debe mostrar error de contraseña débil
         expect(find.text('Password does not meet security requirements'), findsOneWidget);
-        print('✅ [E2E] Validación de contraseña débil funcionando');
+        // print('✅ [E2E] Validación de contraseña débil funcionando');
 
         // Test M7: Validación de entrada maliciosa (SQL Injection)
-        print('🔒 [E2E] Probando protección contra SQL Injection...');
+        // print('🔒 [E2E] Probando protección contra SQL Injection...');
         await tester.enterText(find.byType(TextFormField).at(0), sqlInjectionAttempt);
         await tester.pump();
         
         // Verificar que la función de sanitización del backend funciona
         final sanitized = SecurityConfig.sanitizeInput(sqlInjectionAttempt);
         expect(sanitized, isEmpty); // La entrada maliciosa debe ser rechazada
-        print('✅ [E2E] Protección contra SQL Injection funcionando');
+        // print('✅ [E2E] Protección contra SQL Injection funcionando');
 
         // Test M7: Validación de entrada maliciosa (XSS)
-        print('🔒 [E2E] Probando protección contra XSS...');
+        // print('🔒 [E2E] Probando protección contra XSS...');
         await tester.enterText(find.byType(TextFormField).at(1), xssAttempt);
         await tester.pump();
         
         // Verificar que la función de sanitización del backend funciona
         final sanitizedXss = SecurityConfig.sanitizeInput(xssAttempt);
         expect(sanitizedXss, isEmpty); // La entrada XSS debe ser rechazada
-        print('✅ [E2E] Protección contra XSS funcionando');
+        // print('✅ [E2E] Protección contra XSS funcionando');
 
         // === PHASE 4: REGISTRO EXITOSO ===
-        print('🔒 [E2E] Procediendo con registro válido...');
+        // print('🔒 [E2E] Procediendo con registro válido...');
         
         // Limpiar campos y llenar con datos válidos
         await tester.enterText(find.byType(TextFormField).at(0), testUsername);
@@ -159,20 +159,20 @@ void main() {
         
         // Verificar indicador de carga
         expect(find.byType(CircularProgressIndicator), findsOneWidget);
-        print('✅ [E2E] Indicador de carga mostrado');
+        // print('✅ [E2E] Indicador de carga mostrado');
         
         // Esperar a que complete el registro
         await tester.pump(const Duration(seconds: 1));
         
         // En un test unitario no podemos verificar navegación real
         // pero podemos verificar que el botón de registro fue presionado
-        print('✅ [E2E] Registro iniciado correctamente');
+        // print('✅ [E2E] Registro iniciado correctamente');
 
         // === PHASE 5: VALIDACIÓN DE ALMACENAMIENTO SEGURO ===
-        print('🔒 [E2E] Validando almacenamiento seguro...');
+        // print('🔒 [E2E] Validando almacenamiento seguro...');
         
         // En un test unitario con mocks, no podemos verificar la sesión real
-        print('✅ [E2E] Validación de sesión omitida en test unitario');
+        // print('✅ [E2E] Validación de sesión omitida en test unitario');
 
         // M5: Verificar cifrado de datos sensibles
         final testData = 'test data for encryption';
@@ -184,15 +184,15 @@ void main() {
         // Verificar que se puede descifrar
         final decryptedData = SecurityConfig.decryptData(encryptedData, encryptionKey);
         expect(decryptedData, equals(testData));
-        print('✅ [E2E] Cifrado AES-256 funcionando');
+        // print('✅ [E2E] Cifrado AES-256 funcionando');
 
         // === FIN DEL TEST UNITARIO ===
-        print('🎉 [E2E] Test unitario completado exitosamente');
-        print('✅ Validación de contraseñas débiles');
-        print('✅ Protección contra SQL Injection');
-        print('✅ Protección contra XSS');
-        print('✅ Cifrado de datos sensibles');
-        print('✅ Funciones de seguridad operativas');
+        // print('🎉 [E2E] Test unitario completado exitosamente');
+        // print('✅ Validación de contraseñas débiles');
+        // print('✅ Protección contra SQL Injection');
+        // print('✅ Protección contra XSS');
+        // print('✅ Cifrado de datos sensibles');
+        // print('✅ Funciones de seguridad operativas');
       },
       timeout: const Timeout(Duration(minutes: 2)),
     );
@@ -203,7 +203,7 @@ void main() {
         await tester.pumpWidget(const SecureNotesApp());
         await tester.pumpAndSettle();
 
-        print('🛡️ [SECURITY] Iniciando test de resistencia a ataques...');
+        // print('🛡️ [SECURITY] Iniciando test de resistencia a ataques...');
 
         // Navegar a registro
         await tester.tap(find.text('Don\'t have an account? Register'));
@@ -220,7 +220,7 @@ void main() {
           '<img src=x onerror=alert(1)>',
         ];
 
-        print('🛡️ [SECURITY] Probando resistencia a entradas maliciosas...');
+        // print('🛡️ [SECURITY] Probando resistencia a entradas maliciosas...');
         
         for (int i = 0; i < maliciousInputs.length; i++) {
           final maliciousInput = maliciousInputs[i];
@@ -237,13 +237,13 @@ void main() {
           // Verificar que se puede ingresar el texto
           expect(value, isNotEmpty);
           
-          print('✅ [SECURITY] Entrada maliciosa ${i + 1} sanitizada');
+          // print('✅ [SECURITY] Entrada maliciosa ${i + 1} sanitizada');
         }
 
-        print('🎉 [SECURITY] Todas las entradas maliciosas fueron neutralizadas');
+        // print('🎉 [SECURITY] Todas las entradas maliciosas fueron neutralizadas');
 
         // === VALIDACIÓN DE LÍMITES ===
-        print('🛡️ [SECURITY] Probando validación de límites...');
+        // print('🛡️ [SECURITY] Probando validación de límites...');
         
         // Username muy largo
         final longUsername = 'a' * 1000;
@@ -254,7 +254,7 @@ void main() {
         final truncatedValue = usernameField.controller?.text ?? '';
         expect(truncatedValue.length, lessThanOrEqualTo(50)); // Límite de username
         
-        print('✅ [SECURITY] Validación de límites funcionando');
+        // print('✅ [SECURITY] Validación de límites funcionando');
       },
       timeout: const Timeout(Duration(minutes: 3)),
     );
@@ -265,7 +265,7 @@ void main() {
         await tester.pumpWidget(const SecureNotesApp());
         await tester.pumpAndSettle();
 
-        print('⚡ [PERFORMANCE] Iniciando test de rendimiento...');
+        // print('⚡ [PERFORMANCE] Iniciando test de rendimiento...');
 
         final stopwatch = Stopwatch()..start();
 
@@ -285,7 +285,7 @@ void main() {
         
         // No debe tomar más de 5 segundos para 10 navegaciones
         expect(navigationTime, lessThan(5000));
-        print('✅ [PERFORMANCE] Navegación rápida: ${navigationTime}ms para 10 ciclos');
+        // print('✅ [PERFORMANCE] Navegación rápida: ${navigationTime}ms para 10 ciclos');
 
         // Test de entrada rápida
         await tester.tap(find.text('Don\'t have an account? Register'));
@@ -304,7 +304,7 @@ void main() {
         final inputTime = stopwatch.elapsedMilliseconds;
         
         expect(inputTime, lessThan(3000));
-        print('✅ [PERFORMANCE] Entrada de texto rápida: ${inputTime}ms para 100 entradas');
+        // print('✅ [PERFORMANCE] Entrada de texto rápida: ${inputTime}ms para 100 entradas');
       },
       timeout: const Timeout(Duration(minutes: 2)),
     );

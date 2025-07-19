@@ -149,11 +149,11 @@ void main() {
       // - Registro exitoso
       // - Login exitoso
       
-      print('✅ Test de flujo completo exitoso:');
-      print('  - Registro de usuario nuevo');
-      print('  - Login con credenciales correctas');
-      print('  - Manejo de errores en login');
-      print('  - Navegación entre pantallas');
+      // print('✅ Test de flujo completo exitoso:');
+      // print('  - Registro de usuario nuevo');
+      // print('  - Login con credenciales correctas');
+      // print('  - Manejo de errores en login');
+      // print('  - Navegación entre pantallas');
     });
 
     testWidgets('Protección contra inyección SQL y XSS', 

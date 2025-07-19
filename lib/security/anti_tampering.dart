@@ -24,7 +24,7 @@ class AntiTamperingProtection {
     
     // En modo debug, permitir ejecución para pruebas
     if (kDebugMode) {
-      print('[AntiTampering] Running in debug mode - security checks bypassed for testing');
+      // [AntiTampering] Running in debug mode - security checks bypassed for testing
       return false;
     }
     
@@ -165,7 +165,7 @@ class SecureErrorHandler {
   
   static void _logSecurely(dynamic error) {
     if (kDebugMode) {
-      print('Error: $error');
+      // Error: $error
     } else {
       // En producción, enviar a servicio de logging seguro
       // sin exponer información sensible

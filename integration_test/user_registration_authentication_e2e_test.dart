@@ -5,7 +5,6 @@ import 'package:owaspnote/main.dart';
 import 'package:owaspnote/security/security_config.dart';
 import 'package:owaspnote/security/secure_storage.dart';
 import 'package:owaspnote/services/auth_service.dart';
-import 'package:owaspnote/screens/register_screen.dart';
 
 /// INTEGRATION TEST: End-to-End User Registration and Authentication
 /// 
@@ -35,7 +34,7 @@ void main() {
     // Datos únicos para evitar conflictos entre ejecuciones
     final testTimestamp = DateTime.now().millisecondsSinceEpoch;
     final testUsername = 'e2euser_$testTimestamp';
-    final testEmail = 'e2e_${testTimestamp}@securetest.com';
+    final testEmail = 'e2e_$testTimestamp@securetest.com';
     final testPassword = 'E2E_SecureTest!2024';
     
     // Guardar el ErrorWidget.builder original
@@ -63,7 +62,7 @@ void main() {
     testWidgets(
       '🎯 FLUJO COMPLETO E2E: Registro → Logout → Login → Crear Nota → Verificar Seguridad',
       (WidgetTester tester) async {
-        print('🚀 [E2E] Iniciando test de flujo completo...');
+        // print('🚀 [E2E] Iniciando test de flujo completo...');
 
         // ═══════════════════════════════════════════════════════════════
         // FASE 1: INICIALIZACIÓN Y CARGA DE LA APLICACIÓN
@@ -75,7 +74,7 @@ void main() {
         expect(find.text('Login'), findsAtLeastNWidgets(1));
         expect(find.text('Username'), findsOneWidget);
         expect(find.text('Password'), findsOneWidget);
-        print('✅ [E2E] Aplicación cargada en LoginScreen');
+        // print('✅ [E2E] Aplicación cargada en LoginScreen');
 
         // ═══════════════════════════════════════════════════════════════
         // FASE 2: NAVEGACIÓN A REGISTRO
@@ -89,14 +88,14 @@ void main() {
         expect(find.text('Email'), findsOneWidget);
         expect(find.text('Password'), findsAtLeastNWidgets(1));
         expect(find.text('Confirm Password'), findsOneWidget);
-        print('✅ [E2E] Navegación a RegisterScreen exitosa');
+        // print('✅ [E2E] Navegación a RegisterScreen exitosa');
 
         // ═══════════════════════════════════════════════════════════════
         // FASE 3: VALIDACIONES DE SEGURIDAD EN REGISTRO
         // ═══════════════════════════════════════════════════════════════
         
         // 🛡️ M1 + M7: Probar validación de contraseña débil
-        print('🛡️ [E2E] Probando validación M1: Contraseña débil...');
+        // print('🛡️ [E2E] Probando validación M1: Contraseña débil...');
         await tester.enterText(find.byType(TextFormField).at(0), testUsername);
         await tester.enterText(find.byType(TextFormField).at(1), testEmail);
         await tester.enterText(find.byType(TextFormField).at(2), '123'); // Contraseña débil
@@ -108,10 +107,10 @@ void main() {
         
         // Verificar que muestra que no cumple los requisitos
         expect(find.byIcon(Icons.cancel), findsWidgets); // Íconos de X rojos
-        print('✅ [E2E] M1: Validación de contraseña débil funcionando');
+        // print('✅ [E2E] M1: Validación de contraseña débil funcionando');
 
         // 🛡️ M7: Probar sanitización de entrada (SQL Injection)
-        print('🛡️ [E2E] Probando sanitización M7: SQL Injection...');
+        // print('🛡️ [E2E] Probando sanitización M7: SQL Injection...');
         const sqlInjection = "admin'; DROP TABLE users; --";
         await tester.enterText(find.byType(TextFormField).at(0), sqlInjection);
         await tester.pump();
@@ -122,10 +121,10 @@ void main() {
         // El campo filtra caracteres especiales como comillas y punto y coma
         expect(filteredText.contains("'"), isFalse);
         expect(filteredText.contains(";"), isFalse);
-        print('✅ [E2E] M7: Sanitización SQL Injection funcionando');
+        // print('✅ [E2E] M7: Sanitización SQL Injection funcionando');
 
         // 🛡️ M7: Probar sanitización XSS
-        print('🛡️ [E2E] Probando sanitización M7: XSS...');
+        // print('🛡️ [E2E] Probando sanitización M7: XSS...');
         const xssPayload = '<script>alert("XSS")</script>';
         await tester.enterText(find.byType(TextFormField).at(1), xssPayload);
         await tester.pump();
@@ -134,12 +133,12 @@ void main() {
         final sanitizedEmail = emailField.controller?.text ?? '';
         expect(sanitizedEmail.contains('<script>'), isFalse);
         expect(sanitizedEmail.contains('alert'), isFalse);
-        print('✅ [E2E] M7: Sanitización XSS funcionando');
+        // print('✅ [E2E] M7: Sanitización XSS funcionando');
 
         // ═══════════════════════════════════════════════════════════════
         // FASE 4: REGISTRO EXITOSO CON CREDENCIALES VÁLIDAS
         // ═══════════════════════════════════════════════════════════════
-        print('📝 [E2E] Procediendo con registro válido...');
+        // print('📝 [E2E] Procediendo con registro válido...');
         
         // Limpiar y llenar con datos válidos
         await tester.enterText(find.byType(TextFormField).at(0), testUsername);
@@ -153,7 +152,7 @@ void main() {
         
         // Verificar indicador de carga
         expect(find.byType(CircularProgressIndicator), findsOneWidget);
-        print('✅ [E2E] Indicador de carga mostrado');
+        // print('✅ [E2E] Indicador de carga mostrado');
         
         // Esperar completar registro (timeout más largo para operaciones reales)
         await tester.pumpAndSettle(const Duration(seconds: 5));
@@ -164,12 +163,12 @@ void main() {
         final isOnLoginScreen = find.text('Login').evaluate().isNotEmpty;
         
         expect(hasSuccessMessage || isOnLoginScreen, isTrue);
-        print('✅ [E2E] Registro completado exitosamente');
+        // print('✅ [E2E] Registro completado exitosamente');
 
         // ═══════════════════════════════════════════════════════════════
         // FASE 5: VALIDACIONES DE ALMACENAMIENTO SEGURO (M2, M5)
         // ═══════════════════════════════════════════════════════════════
-        print('🔒 [E2E] Validando almacenamiento seguro...');
+        // print('🔒 [E2E] Validando almacenamiento seguro...');
         
         // M5: Verificar cifrado AES-256
         const testData = 'Datos sensibles para cifrado';
@@ -183,12 +182,12 @@ void main() {
         // Verificar descifrado
         final decryptedData = SecurityConfig.decryptData(encryptedData, encryptionKey);
         expect(decryptedData, equals(testData));
-        print('✅ [E2E] M5: Cifrado AES-256 funcionando correctamente');
+        // print('✅ [E2E] M5: Cifrado AES-256 funcionando correctamente');
 
         // ═══════════════════════════════════════════════════════════════
         // FASE 6: LOGIN CON CREDENCIALES REGISTRADAS
         // ═══════════════════════════════════════════════════════════════
-        print('🔑 [E2E] Probando login con credenciales registradas...');
+        // print('🔑 [E2E] Probando login con credenciales registradas...');
         
         // Asegurar que estamos en LoginScreen
         if (find.text('Login').evaluate().isEmpty) {
@@ -209,7 +208,7 @@ void main() {
                         find.textContaining('failed').evaluate().isNotEmpty ||
                         find.textContaining('incorrect').evaluate().isNotEmpty;
         expect(hasError, isTrue);
-        print('✅ [E2E] M4: Rechazo de credenciales incorrectas funcionando');
+        // print('✅ [E2E] M4: Rechazo de credenciales incorrectas funcionando');
         
         // Ahora usar credenciales correctas
         await tester.enterText(find.byType(TextFormField).at(0), testUsername);
@@ -232,15 +231,15 @@ void main() {
                                 find.text('Dashboard').evaluate().isNotEmpty;
         
         if (isAuthenticated) {
-          print('✅ [E2E] M4: Login exitoso con credenciales válidas');
+          // print('✅ [E2E] M4: Login exitoso con credenciales válidas');
         } else {
-          print('ℹ️  [E2E] Login procesado, continuando test (puede estar en pantalla diferente)');
+          // print('ℹ️  [E2E] Login procesado, continuando test (puede estar en pantalla diferente)');
         }
 
         // ═══════════════════════════════════════════════════════════════
         // FASE 7: VALIDACIÓN DE SESIÓN Y AUTORIZACIÓN (M6)
         // ═══════════════════════════════════════════════════════════════
-        print('🎫 [E2E] Validando sesión y autorización...');
+        // print('🎫 [E2E] Validando sesión y autorización...');
         
         // Verificar que hay sesión activa
         final isAuthenticatedCheck = await AuthService.isAuthenticated();
@@ -250,17 +249,16 @@ void main() {
         final sessionToken = await SessionManager.getValidAuthToken();
         expect(sessionToken, isNotNull);
         expect(sessionToken!.isNotEmpty, isTrue);
-        print('✅ [E2E] M6: Sesión activa y token válido');
+        // print('✅ [E2E] M6: Sesión activa y token válido');
 
         // ═══════════════════════════════════════════════════════════════
         // FASE 8: CREACIÓN DE NOTA CIFRADA (M5, M6, M7)
         // ═══════════════════════════════════════════════════════════════
-        print('📝 [E2E] Probando creación de nota cifrada...');
+        // print('📝 [E2E] Probando creación de nota cifrada...');
         
         // Buscar botón de agregar nota (puede tener diferentes iconos o estar en menú)
         final addButton = find.byIcon(Icons.add);
         final createButton = find.text('Create Note');
-        final newButton = find.text('New');
         
         if (addButton.evaluate().isNotEmpty) {
           await tester.tap(addButton);
@@ -287,33 +285,33 @@ void main() {
             }
             
             await tester.pumpAndSettle();
-            print('✅ [E2E] M5: Proceso de creación de nota ejecutado');
+            // print('✅ [E2E] M5: Proceso de creación de nota ejecutado');
           } else {
-            print('ℹ️  [E2E] Formulario de nota no encontrado después de tap');
+            // print('ℹ️  [E2E] Formulario de nota no encontrado después de tap');
           }
         } else if (createButton.evaluate().isNotEmpty) {
           await tester.tap(createButton);
           await tester.pumpAndSettle();
-          print('ℹ️  [E2E] Botón "Create Note" encontrado y presionado');
+          // print('ℹ️  [E2E] Botón "Create Note" encontrado y presionado');
         } else {
-          print('ℹ️  [E2E] Botón de agregar nota no encontrado, saltando creación de nota...');
+          // print('ℹ️  [E2E] Botón de agregar nota no encontrado, saltando creación de nota...');
         }
 
         // ═══════════════════════════════════════════════════════════════
         // FASE 9: VALIDACIONES FINALES DE SEGURIDAD OWASP
         // ═══════════════════════════════════════════════════════════════
-        print('🔍 [E2E] Ejecutando validaciones finales de seguridad...');
+        // print('🔍 [E2E] Ejecutando validaciones finales de seguridad...');
         
         // M2: Verificar almacenamiento seguro activo
         final storedAuthData = await SecureStorageManager.getSecureData('auth_token');
         expect(storedAuthData, isNotNull);
-        print('✅ [E2E] M2: Datos almacenados de forma segura');
+        // print('✅ [E2E] M2: Datos almacenados de forma segura');
         
         // M4: Verificar generación de salt único
         final salt1 = SecurityConfig.generateSalt();
         final salt2 = SecurityConfig.generateSalt();
         expect(salt1, isNot(equals(salt2)));
-        print('✅ [E2E] M4: Generación de salts únicos');
+        // print('✅ [E2E] M4: Generación de salts únicos');
         
         // M4: Verificar hashing seguro (tiempo constante)
         final password = 'TestPassword123!';
@@ -336,7 +334,7 @@ void main() {
         final averageTime = (time1 + time2) / 2;
         // PBKDF2 puede tener variaciones naturales, pero no debe ser extremo
         expect(timeDifference / averageTime, lessThan(2.0)); // Menos del 200% de diferencia
-        print('✅ [E2E] M4: Hashing con tiempo relativamente constante (diff: ${(timeDifference / averageTime * 100).toStringAsFixed(1)}%)');
+        // print('✅ [E2E] M4: Hashing con tiempo relativamente constante (diff: ${(timeDifference / averageTime * 100).toStringAsFixed(1)}%)');
         
         // M7: Verificar sanitización funciona correctamente
         const maliciousInput = '<script>alert("hack")</script>test';
@@ -344,12 +342,12 @@ void main() {
         expect(sanitized.contains('<script>'), isFalse);
         expect(sanitized.contains('alert'), isFalse);
         expect(sanitized, equals('test')); // Debe quedar solo "test"
-        print('✅ [E2E] M7: Sanitización de entrada funcionando');
+        // print('✅ [E2E] M7: Sanitización de entrada funcionando');
 
         // ═══════════════════════════════════════════════════════════════
         // FASE 10: LOGOUT SEGURO Y LIMPIEZA
         // ═══════════════════════════════════════════════════════════════
-        print('🚪 [E2E] Ejecutando logout seguro...');
+        // print('🚪 [E2E] Ejecutando logout seguro...');
         
         // Buscar botón de logout (puede estar en menú)
         final logoutButton = find.byIcon(Icons.logout).evaluate().isNotEmpty
@@ -371,26 +369,26 @@ void main() {
         
         final isAuthenticatedAfterLogout = await AuthService.isAuthenticated();
         expect(isAuthenticatedAfterLogout, isFalse);
-        print('✅ [E2E] M6: Logout seguro - sesión limpiada');
+        // print('✅ [E2E] M6: Logout seguro - sesión limpiada');
 
         // ═══════════════════════════════════════════════════════════════
         // RESUMEN FINAL DEL TEST E2E
         // ═══════════════════════════════════════════════════════════════
-        print('🎉 [E2E] ¡TEST END-TO-END COMPLETADO EXITOSAMENTE!');
-        print('📊 [E2E] MITIGACIONES OWASP VALIDADAS:');
-        print('   ✅ M1: Validación de contraseñas fuertes');
-        print('   ✅ M2: Almacenamiento seguro con cifrado');
-        print('   ✅ M3: Comunicación HTTPS (configurado)');
-        print('   ✅ M4: Autenticación robusta PBKDF2 + timing attack protection');
-        print('   ✅ M5: Cifrado AES-256 con IVs únicos');
-        print('   ✅ M6: Autorización con tokens JWT expirados');
-        print('   ✅ M7: Sanitización completa XSS/SQLi');
-        print('   ✅ M8: Verificación integridad (simulada en debug)');
-        print('   ✅ M9: Ofuscación de datos sensibles');
-        print('   ✅ M10: Superficie de ataque mínima');
+        // print('🎉 [E2E] ¡TEST END-TO-END COMPLETADO EXITOSAMENTE!');
+        // print('📊 [E2E] MITIGACIONES OWASP VALIDADAS:');
+        // print('   ✅ M1: Validación de contraseñas fuertes');
+        // print('   ✅ M2: Almacenamiento seguro con cifrado');
+        // print('   ✅ M3: Comunicación HTTPS (configurado)');
+        // print('   ✅ M4: Autenticación robusta PBKDF2 + timing attack protection');
+        // print('   ✅ M5: Cifrado AES-256 con IVs únicos');
+        // print('   ✅ M6: Autorización con tokens JWT expirados');
+        // print('   ✅ M7: Sanitización completa XSS/SQLi');
+        // print('   ✅ M8: Verificación integridad (simulada en debug)');
+        // print('   ✅ M9: Ofuscación de datos sensibles');
+        // print('   ✅ M10: Superficie de ataque mínima');
         
-        print('🔒 [E2E] Flujo completo: Registro → Login → Operaciones → Logout');
-        print('🛡️ [E2E] Todas las validaciones de seguridad OWASP Mobile Top 10 pasaron');
+        // print('🔒 [E2E] Flujo completo: Registro → Login → Operaciones → Logout');
+        // print('🛡️ [E2E] Todas las validaciones de seguridad OWASP Mobile Top 10 pasaron');
       },
       timeout: const Timeout(Duration(minutes: 10)), // Timeout largo para E2E
     );
@@ -400,7 +398,7 @@ void main() {
     testWidgets(
       '🛡️ SECURITY TEST: Validación de sanitización en servicios',
       (WidgetTester tester) async {
-        print('🛡️ [SECURITY] Iniciando test de sanitización...');
+        // print('🛡️ [SECURITY] Iniciando test de sanitización...');
 
         // Array de payloads maliciosos comunes
         final maliciousPayloads = [
@@ -416,7 +414,7 @@ void main() {
           '<svg onload=alert(1)>',
         ];
 
-        print('🛡️ [SECURITY] Probando ${maliciousPayloads.length} payloads maliciosos...');
+        // print('🛡️ [SECURITY] Probando ${maliciousPayloads.length} payloads maliciosos...');
         
         int successfulBlocks = 0;
         
@@ -442,7 +440,7 @@ void main() {
           if (isBlocked || sanitized.isEmpty) {
             successfulBlocks++;
           } else {
-            print('⚠️  [SECURITY] Payload no bloqueado: "$payload" -> "$sanitized"');
+            // print('⚠️  [SECURITY] Payload no bloqueado: "$payload" -> "$sanitized"');
           }
         }
 
@@ -450,7 +448,7 @@ void main() {
         final blockRate = successfulBlocks / maliciousPayloads.length;
         expect(blockRate, equals(1.0)); // Esperamos 100% de bloqueo
         
-        print('✅ [SECURITY] Bloqueados $successfulBlocks/${maliciousPayloads.length} ataques (${(blockRate * 100).toStringAsFixed(1)}%)');
+        // print('✅ [SECURITY] Bloqueados $successfulBlocks/${maliciousPayloads.length} ataques (${(blockRate * 100).toStringAsFixed(1)}%)');
         
         // Test adicional: verificar casos específicos importantes
         final scriptTest = SecurityConfig.sanitizeInput('<script>alert("hack")</script>test');
@@ -466,7 +464,7 @@ void main() {
         final validTest = SecurityConfig.sanitizeInput('Usuario123 test@email.com');
         expect(validTest, equals('Usuario123 test@email.com')); // Debe preservar texto válido
         
-        print('✅ [SECURITY] Casos específicos de sanitización validados');
+        // print('✅ [SECURITY] Casos específicos de sanitización validados');
       },
       timeout: const Timeout(Duration(minutes: 2)),
     );

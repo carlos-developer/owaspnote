@@ -38,7 +38,7 @@ class AuthService {
   static Future<void> initialize() async {
     if (_useMockService) {
       // En modo mock, no hacer verificaciones de seguridad
-      print('[AuthService] Modo mock activo - usando almacenamiento local');
+      // [AuthService] Modo mock activo - usando almacenamiento local
       return;
     }
     
