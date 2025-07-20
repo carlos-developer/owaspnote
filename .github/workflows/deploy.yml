@@ -29,7 +29,13 @@ jobs:
         run: |
           flutter --version
           flutter pub get
-          flutter build web --release --web-renderer html
+          flutter build web --release --web-renderer html --base-href /owaspnote/
+      - name: Prepare deployment
+        run: |
+          # Create .nojekyll file to prevent Jekyll processing
+          touch build/web/.nojekyll
+          # List files to verify
+          ls -la build/web/
           
       - name: Deploy to GitHub Pages
         uses: peaceiris/actions-gh-pages@v3
@@ -37,3 +43,4 @@ jobs:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_dir: ./build/web
           force_orphan: true
+          cname: false
