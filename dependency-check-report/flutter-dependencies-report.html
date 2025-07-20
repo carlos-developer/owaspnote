@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Flutter Dependencies Security Report - owaspnote</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            margin: 20px;
+            background-color: #f4f4f4;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background-color: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+        h1, h2 {
+            color: #333;
+        }
+        h1 {
+            border-bottom: 3px solid #007bff;
+            padding-bottom: 10px;
+        }
+        .info-box {
+            background-color: #e7f3ff;
+            border-left: 4px solid #007bff;
+            padding: 10px;
+            margin: 20px 0;
+        }
+        .warning-box {
+            background-color: #fff3cd;
+            border-left: 4px solid #ffc107;
+            padding: 10px;
+            margin: 20px 0;
+        }
+        .danger-box {
+            background-color: #f8d7da;
+            border-left: 4px solid #dc3545;
+            padding: 10px;
+            margin: 20px 0;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 12px;
+            text-align: left;
+        }
+        th {
+            background-color: #f8f9fa;
+            font-weight: bold;
+        }
+        tr:nth-child(even) {
+            background-color: #f8f9fa;
+        }
+        .version-outdated {
+            color: #dc3545;
+            font-weight: bold;
+        }
+        .version-current {
+            color: #28a745;
+        }
+        .security-badge {
+            display: inline-block;
+            padding: 3px 8px;
+            border-radius: 3px;
+            font-size: 12px;
+            font-weight: bold;
+        }
+        .badge-critical {
+            background-color: #dc3545;
+            color: white;
+        }
+        .badge-warning {
+            background-color: #ffc107;
+            color: black;
+        }
+        .badge-info {
+            background-color: #17a2b8;
+            color: white;
+        }
+        .timestamp {
+            color: #666;
+            font-size: 14px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔒 Flutter Dependencies Security Report</h1>
+        <p class="timestamp">Generated on: <strong>$(date)</strong></p>
+        <p>Project: <strong>owaspnote</strong></p>
+        
+        <div class="info-box">
+            <h3>📋 Report Summary</h3>
+            <p>This report analyzes all Flutter/Dart dependencies in the project for potential security issues.</p>
+        </div>
+<h2>📦 Current Dependencies</h2>
+<table>
+<tr><th>Package</th><th>Current Version</th><th>Type</th><th>Description</th></tr>
+<tr><td><strong>crypto</strong></td><td>3.0.3</td><td>Direct</td><td>-</td></tr>
+<tr><td><strong>encrypt</strong></td><td>5.0.3</td><td>Direct</td><td>-</td></tr>
+<tr><td><strong>flutter_secure_storage</strong></td><td>9.2.2</td><td>Direct</td><td>-</td></tr>
+<tr><td><strong>local_auth</strong></td><td>2.2.0</td><td>Direct</td><td>-</td></tr>
+<tr><td><strong>dio</strong></td><td>5.4.0</td><td>Direct</td><td>-</td></tr>
+<tr><td><strong>provider</strong></td><td>6.1.1</td><td>Direct</td><td>-</td></tr>
+<tr><td><strong>sqflite</strong></td><td>2.3.0</td><td>Direct</td><td>-</td></tr>
+<tr><td><strong>path</strong></td><td>1.8.3</td><td>Direct</td><td>-</td></tr>
+<tr><td><strong>cupertino_icons</strong></td><td>1.0.8</td><td>Direct</td><td>-</td></tr>
+<tr><td><strong>pointycastle</strong></td><td>3.7.4</td><td>Direct</td><td>-</td></tr>
+</table>
+<h2>🛡️ Security-Related Packages</h2>
+<div class="warning-box">
+    <h3>Security Packages Detected:</h3>
+    <ul>
+        <li><strong>crypto (^3.0.3)</strong> - Cryptographic algorithms</li>
+        <li><strong>encrypt (^5.0.3)</strong> - Encryption/decryption functionality</li>
+        <li><strong>flutter_secure_storage (^9.2.2)</strong> - Secure storage for sensitive data</li>
+        <li><strong>local_auth (^2.2.0)</strong> - Biometric authentication</li>
+        <li><strong>pointycastle (^3.7.4)</strong> - Cryptographic library</li>
+        <li><strong>dio (^5.4.0)</strong> - HTTP client with security features</li>
+    </ul>
+</div>
+
+<h2>⚠️ Security Recommendations</h2>
+<div class="danger-box">
+    <h3>Critical Security Checks:</h3>
+    <ol>
+        <li><strong>Keep Dependencies Updated:</strong> Run <code>flutter pub outdated</code> regularly</li>
+        <li><strong>Audit Dependencies:</strong> Review each package's security history on pub.dev</li>
+        <li><strong>Minimize Attack Surface:</strong> Remove unused dependencies</li>
+        <li><strong>Check for Known Vulnerabilities:</strong> Monitor security advisories for your dependencies</li>
+        <li><strong>Enable Certificate Pinning:</strong> For network communications (dio configuration)</li>
+        <li><strong>Secure Storage:</strong> Ensure flutter_secure_storage is properly configured</li>
+    </ol>
+</div>
+
+<h2>🔍 Outdated Packages Check</h2>
+<pre>
+Showing outdated packages.
+[*] indicates versions that are not the latest available.
+
+Package Name                               Current  Upgradable  Resolvable  Latest  
+
+direct dependencies:                      
+pointycastle                               *3.9.1   *3.9.1      *3.9.1      4.0.0   
+
+dev_dependencies:                         
+flutter_lints                              *5.0.0   *5.0.0      6.0.0       6.0.0   
+
+transitive dependencies:                  
+characters                                 *1.4.0   *1.4.0      *1.4.0      1.4.1   
+flutter_secure_storage_linux               *1.2.3   *1.2.3      *1.2.3      2.0.1   
+flutter_secure_storage_macos               *3.1.3   *3.1.3      *3.1.3      4.0.0   
+flutter_secure_storage_platform_interface  *1.1.2   *1.1.2      *1.1.2      2.0.1   
+flutter_secure_storage_web                 *1.2.1   *1.2.1      *1.2.1      2.0.0   
+flutter_secure_storage_windows             *3.1.2   *3.1.2      *3.1.2      4.0.0   
+js                                         *0.6.7   *0.6.7      *0.6.7      0.7.2   (discontinued)  
+local_auth_android                         *1.0.49  1.0.50      1.0.50      1.0.50  
+material_color_utilities                   *0.11.1  *0.11.1     *0.11.1     0.13.0  
+meta                                       *1.16.0  *1.16.0     *1.16.0     1.17.0  
+vector_math                                *2.1.4   *2.1.4      *2.1.4      2.2.0   
+
+transitive dev_dependencies:              
+leak_tracker                               *10.0.9  *10.0.9     *10.0.9     11.0.1  
+leak_tracker_flutter_testing               *3.0.9   *3.0.9      *3.0.9      3.0.10  
+leak_tracker_testing                       *3.0.1   *3.0.1      *3.0.1      3.0.2   
+lints                                      *5.1.1   *5.1.1      6.0.0       6.0.0   
+process                                    *5.0.3   *5.0.3      *5.0.3      5.0.4   
+test_api                                   *0.7.4   *0.7.4      *0.7.4      0.7.6   
+vm_service                                 *15.0.0  *15.0.0     *15.0.0     15.0.2  
+
+1 upgradable dependency is locked (in pubspec.lock) to an older version.
+To update it, use `flutter pub upgrade`.
+
+2  dependencies are constrained to versions that are older than a resolvable version.
+To update these dependencies, edit pubspec.yaml, or run `flutter pub upgrade --major-versions`.
+
+js
+    Package js has been discontinued. See https://dart.dev/go/package-discontinue
+</pre>
+<h2>📚 Additional Resources</h2>
+<ul>
+    <li><a href="https://owasp.org/www-project-mobile-top-10/" target="_blank">OWASP Mobile Top 10</a></li>
+    <li><a href="https://pub.dev/security" target="_blank">Dart Package Security</a></li>
+    <li><a href="https://docs.flutter.dev/security" target="_blank">Flutter Security Best Practices</a></li>
+</ul>
+
+<div class="info-box">
+    <p><strong>Note:</strong> For comprehensive vulnerability scanning including native dependencies, use the OWASP Dependency-Check tool by running <code>./dependency-check.sh</code></p>
+</div>
+
+</div>
+</body>
+</html>
