@@ -1,8 +1,6 @@
-name: Fixed Deploy
+name: Deploy Safe
 
 on:
-  push:
-    branches: [ main ]
   workflow_dispatch:
 
 jobs:
@@ -20,6 +18,8 @@ jobs:
           
       - run: |
           flutter --version
+          # Downgrade flutter_lints temporarily
+          flutter pub add dev:flutter_lints:^4.0.0 --force
           flutter pub get
           flutter build web --release --web-renderer html
           
