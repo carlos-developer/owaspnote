@@ -35,7 +35,7 @@ class MockAuthService {
       username: mockUser.username,
       email: mockUser.email,
       createdAt: DateTime.now(),
-      permissions: ['read', 'write'], // Permisos básicos para usuario mock
+      permissions: ['read_notes', 'create_notes', 'update_notes', 'delete_notes'], // Permisos completos para notas
     );
   }
 
@@ -94,7 +94,7 @@ class MockAuthService {
       username: username,
       email: email,
       createdAt: DateTime.now(),
-      permissions: ['read', 'write'],
+      permissions: ['read_notes', 'create_notes', 'update_notes', 'delete_notes'],
     );
     
     // Guardar como usuario actual
@@ -130,7 +130,7 @@ class MockAuthService {
       username: userData['username'],
       email: userData['email'],
       createdAt: DateTime.parse(userData['createdAt'] ?? DateTime.now().toIso8601String()),
-      permissions: ['read', 'write'],
+      permissions: ['read_notes', 'create_notes', 'update_notes', 'delete_notes'],
     );
     
     // Guardar como usuario actual
