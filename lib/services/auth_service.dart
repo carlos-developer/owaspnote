@@ -18,21 +18,30 @@ class AuthService {
   static bool _useMockService = false;
   static final MockAuthService _mockService = MockAuthService();
   
-  /// Habilita el modo mock para tests
-  static void enableMockMode() {
+  /// Habilita el modo local (persistencia local)
+  static void enableLocalMode() {
     _useMockService = true;
   }
   
-  /// Deshabilita el modo mock
-  static void disableMockMode() {
+  /// Deshabilita el modo local
+  static void disableLocalMode() {
     _useMockService = false;
     _mockService.clearAllData();
   }
   
-  /// Verifica si el modo mock está habilitado
-  static bool isMockModeEnabled() {
+  /// Verifica si el modo local está habilitado
+  static bool isLocalModeEnabled() {
     return _useMockService;
   }
+  
+  /// Habilita el modo mock para tests (alias para compatibilidad)
+  static void enableMockMode() => enableLocalMode();
+  
+  /// Deshabilita el modo mock (alias para compatibilidad)
+  static void disableMockMode() => disableLocalMode();
+  
+  /// Verifica si el modo mock está habilitado (alias para compatibilidad)
+  static bool isMockModeEnabled() => isLocalModeEnabled();
   
   /// Inicializa el servicio con verificaciones de seguridad
   static Future<void> initialize() async {

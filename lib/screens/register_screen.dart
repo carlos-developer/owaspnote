@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import '../services/auth_service.dart';
 import '../security/security_config.dart';
+import 'login_screen.dart';
 
 /// Pantalla de registro con validaciones de seguridad
 class RegisterScreen extends StatefulWidget {
@@ -21,6 +22,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
   bool _isLoading = false;
   bool _obscurePassword = true;
   bool _obscureConfirmPassword = true;
+  bool _useLocalMode = false; // Para modo local
   
   // Estado de validación de contraseña
   bool _hasMinLength = false;
@@ -74,18 +76,35 @@ class _RegisterScreenState extends State<RegisterScreen> {
   Future<void> _handleRegister() async {
     if (!_formKey.currentState!.validate()) return;
     
+    // Configurar modo local si está seleccionado
+    if (_useLocalMode) {
+      AuthService.enableLocalMode();
+    } else {
+      AuthService.disableLocalMode();
+    }
+    
     setState(() => _isLoading = true);
     
+    // Ejecutar registro en segundo plano
+    _performAsyncRegister();
+  }
+  
+  /// Realiza el registro de forma asíncrona sin bloquear la UI
+  Future<void> _performAsyncRegister() async {
     try {
-      await AuthService.initialize();
+      // Inicializar servicio en segundo plano
+      await Future.microtask(() => AuthService.initialize());
       
-      await AuthService.register(
+      // Realizar registro en segundo plano
+      await Future.microtask(() => AuthService.register(
         username: _usernameController.text.trim(),
         email: _emailController.text.trim(),
         password: _passwordController.text,
-      );
+      ));
       
       if (mounted) {
+        setState(() => _isLoading = false);
+        
         // Muestra mensaje de éxito
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
@@ -94,8 +113,19 @@ class _RegisterScreenState extends State<RegisterScreen> {
           ),
         );
         
-        // Vuelve a la pantalla de login
-        Navigator.of(context).pop();
+        // Vuelve a la pantalla de login con animación
+        await Navigator.of(context).pushReplacement(
+          PageRouteBuilder(
+            pageBuilder: (context, animation, secondaryAnimation) => 
+              const LoginScreen(),
+            transitionsBuilder: (context, animation, secondaryAnimation, child) {
+              return FadeTransition(
+                opacity: animation,
+                child: child,
+              );
+            },
+          ),
+        );
       }
     } catch (e) {
       _showError(e.toString());
@@ -319,7 +349,35 @@ class _RegisterScreenState extends State<RegisterScreen> {
                       enabled: !_isLoading,
                     ),
                     
-                    const SizedBox(height: 30),
+                    const SizedBox(height: 20),
+                    
+                    // Opción de modo local
+                    Container(
+                      decoration: BoxDecoration(
+                        color: Colors.grey[100],
+                        borderRadius: BorderRadius.circular(8),
+                        border: Border.all(color: Colors.grey[300]!),
+                      ),
+                      child: SwitchListTile(
+                        title: const Text('Use Local Mode'),
+                        subtitle: const Text(
+                          'Store data locally on this device only',
+                          style: TextStyle(fontSize: 12),
+                        ),
+                        value: _useLocalMode,
+                        onChanged: _isLoading ? null : (value) {
+                          setState(() {
+                            _useLocalMode = value;
+                          });
+                        },
+                        secondary: Icon(
+                          _useLocalMode ? Icons.smartphone : Icons.cloud,
+                          color: _useLocalMode ? Colors.green : Colors.blue,
+                        ),
+                      ),
+                    ),
+                    
+                    const SizedBox(height: 20),
                     
                     // Botón de registro
                     ElevatedButton(

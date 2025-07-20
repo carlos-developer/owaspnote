@@ -32,10 +32,15 @@ class _LoginScreenState extends State<LoginScreen> {
   void initState() {
     super.initState();
     _checkDeviceSecurity();
-    // En modo debug, verificar si el modo local estaba activo
-    if (const bool.fromEnvironment('dart.vm.product') == false) {
-      _useLocalMode = AuthService.isMockModeEnabled();
-    }
+    _loadLocalModePreference();
+  }
+  
+  /// Carga la preferencia de modo local guardada
+  Future<void> _loadLocalModePreference() async {
+    // Por ahora, verificar si el modo local está activo
+    setState(() {
+      _useLocalMode = AuthService.isLocalModeEnabled();
+    });
   }
   
   /// Verifica la seguridad del dispositivo
@@ -92,40 +97,62 @@ class _LoginScreenState extends State<LoginScreen> {
       return;
     }
     
+    // Configurar modo local si está seleccionado
+    if (_useLocalMode) {
+      AuthService.enableLocalMode();
+    } else {
+      AuthService.disableLocalMode();
+    }
+    
     setState(() => _isLoading = true);
     
+    // Ejecutar login en segundo plano
+    _performAsyncLogin();
+  }
+  
+  /// Realiza el login de forma asíncrona sin bloquear la UI
+  Future<void> _performAsyncLogin() async {
     try {
-      await AuthService.initialize();
+      // Inicializar servicio en segundo plano
+      await Future.microtask(() => AuthService.initialize());
       
-      final user = await AuthService.login(
+      // Realizar login en segundo plano
+      final user = await Future.microtask(() => AuthService.login(
         username: _usernameController.text.trim(),
         password: _passwordController.text,
-        requireBiometric: true,
-      );
+        requireBiometric: !_useLocalMode, // No requerir biométrico en modo local
+      ));
       
       // Reset intentos en login exitoso
       _loginAttempts = 0;
       _lastAttemptTime = null;
       
       if (mounted) {
-        Navigator.of(context).pushReplacement(
-          MaterialPageRoute(
-            builder: (context) => HomeScreen(user: user),
+        // Navegar a la pantalla principal
+        await Navigator.of(context).pushReplacement(
+          PageRouteBuilder(
+            pageBuilder: (context, animation, secondaryAnimation) => 
+              HomeScreen(user: user),
+            transitionsBuilder: (context, animation, secondaryAnimation, child) {
+              return FadeTransition(
+                opacity: animation,
+                child: child,
+              );
+            },
           ),
         );
       }
     } catch (e) {
       // Incrementa intentos fallidos
-      setState(() {
-        _loginAttempts++;
-        _lastAttemptTime = DateTime.now();
-      });
-      
-      // Mensaje genérico para no revelar información
-      _showError('Invalid credentials');
-    } finally {
       if (mounted) {
-        setState(() => _isLoading = false);
+        setState(() {
+          _loginAttempts++;
+          _lastAttemptTime = DateTime.now();
+          _isLoading = false;
+        });
+        
+        // Mensaje genérico para no revelar información
+        _showError('Invalid credentials');
       }
     }
   }
@@ -236,7 +263,35 @@ class _LoginScreenState extends State<LoginScreen> {
                       onFieldSubmitted: (_) => _handleLogin(),
                     ),
                     
-                    const SizedBox(height: 30),
+                    const SizedBox(height: 20),
+                    
+                    // Opción de modo local
+                    Container(
+                      decoration: BoxDecoration(
+                        color: Colors.grey[100],
+                        borderRadius: BorderRadius.circular(8),
+                        border: Border.all(color: Colors.grey[300]!),
+                      ),
+                      child: SwitchListTile(
+                        title: const Text('Use Local Mode'),
+                        subtitle: const Text(
+                          'Store data locally on this device',
+                          style: TextStyle(fontSize: 12),
+                        ),
+                        value: _useLocalMode,
+                        onChanged: _isLoading ? null : (value) {
+                          setState(() {
+                            _useLocalMode = value;
+                          });
+                        },
+                        secondary: Icon(
+                          _useLocalMode ? Icons.smartphone : Icons.cloud,
+                          color: _useLocalMode ? Colors.green : Colors.blue,
+                        ),
+                      ),
+                    ),
+                    
+                    const SizedBox(height: 20),
                     
                     // Botón de login
                     ElevatedButton(
