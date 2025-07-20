@@ -24,23 +24,20 @@ jobs:
       - name: Setup Flutter
         uses: subosito/flutter-action@v2
         with:
-          flutter-version: '3.8.1'
+          flutter-version: '3.24.0'
           channel: 'stable'
           
       - name: Enable Flutter Web
         run: flutter config --enable-web
         
       - name: Get dependencies
-        working-directory: ./owaspnote
         run: flutter pub get
         
       - name: Run tests
-        working-directory: ./owaspnote
         run: flutter test
         continue-on-error: true  # Continue even if tests fail for now
         
       - name: Build web
-        working-directory: ./owaspnote
         run: |
           flutter build web --release \
             --web-renderer=canvaskit \
@@ -49,7 +46,7 @@ jobs:
             --base-href="/${{ github.event.repository.name }}/"
             
       - name: Add .nojekyll file
-        run: touch ./owaspnote/build/web/.nojekyll
+        run: touch build/web/.nojekyll
         
       - name: Setup Pages
         uses: actions/configure-pages@v4
@@ -57,7 +54,7 @@ jobs:
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
-          path: './owaspnote/build/web'
+          path: 'build/web'
           
   deploy:
     environment:
