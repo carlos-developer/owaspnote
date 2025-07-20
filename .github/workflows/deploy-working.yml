@@ -1,6 +1,8 @@
-name: Deploy Simple
+name: Deploy Working
 
 on:
+  push:
+    branches: [ main ]
   workflow_dispatch:
 
 jobs:
@@ -8,8 +10,6 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       contents: write
-      pages: write
-      id-token: write
     steps:
       - uses: actions/checkout@v4
       
@@ -18,16 +18,20 @@ jobs:
           flutter-version: '3.22.3'
           channel: 'stable'
           
-      - name: Quick Fix Dependencies
+      - name: Fix Dependencies
         run: |
-          # Temporarily downgrade problematic packages
+          # Downgrade flutter_lints to compatible version
           sed -i 's/flutter_lints: ^5.0.0/flutter_lints: ^3.0.0/' pubspec.yaml
+          
+          # Get dependencies
           flutter pub get
           
-      - name: Build
-        run: flutter build web --release --web-renderer html
+      - name: Build Web
+        run: |
+          # Build with minimal optimizations
+          flutter build web --release --web-renderer html --dart-define=Dart2jsOptimization=O1
           
-      - name: Deploy to GitHub Pages
+      - name: Deploy
         uses: peaceiris/actions-gh-pages@v3
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
