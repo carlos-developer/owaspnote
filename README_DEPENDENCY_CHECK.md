@@ -136,3 +136,88 @@ Si encuentras problemas con los scripts o necesitas ayuda interpretando los resu
 1. Verifica los logs en `dependency-check-report/`
 2. Consulta la documentación oficial de OWASP Dependency-Check
 3. Para problemas específicos de Flutter, revisa [pub.dev security](https://pub.dev/security)
+
+## 📝 Proceso de Implementación Detallado
+
+### ¿Por qué no se agregó como dependencia en pubspec.yaml?
+
+OWASP Dependency-Check **NO es una librería de Dart/Flutter**, sino una herramienta de análisis de seguridad independiente que examina proyectos desde fuera. Por esta razón:
+
+1. **No existe un paquete de pub.dev**: OWASP Dependency-Check es una herramienta Java que no está disponible como paquete Dart
+2. **Análisis externo**: Funciona escaneando archivos del proyecto (incluyendo `pubspec.yaml`, archivos gradle de Android, etc.)
+3. **Múltiples ecosistemas**: Analiza no solo dependencias Dart, sino también las nativas de Android (Java/Kotlin) y otras
+
+### Proceso de Implementación Paso a Paso
+
+#### 1. Análisis Inicial del Proyecto
+```bash
+# Se identificó que owaspnote es un proyecto Flutter
+cat pubspec.yaml  # Para ver las dependencias actuales
+```
+
+#### 2. Decisión de Arquitectura
+Se optó por crear scripts bash en lugar de modificar `pubspec.yaml` porque:
+- OWASP Dependency-Check es una herramienta CLI/Docker, no una librería
+- Necesita acceso al sistema de archivos completo
+- Requiere Java o Docker para ejecutarse
+- Analiza múltiples tipos de archivos (no solo Dart)
+
+#### 3. Implementación con Docker
+Se eligió Docker como método principal porque:
+- **Portabilidad**: Funciona en cualquier sistema con Docker
+- **Sin instalación manual**: No requiere instalar Java, Maven, etc.
+- **Versión consistente**: Siempre usa la última versión de OWASP DC
+- **Aislamiento**: No interfiere con el entorno del desarrollador
+
+#### 4. Scripts Creados
+
+**dependency-check.sh**:
+```bash
+# Ejecuta OWASP Dependency-Check usando Docker
+docker run --rm \
+    -v "$(pwd)":/src \           # Monta el proyecto como volumen
+    -v "$(pwd)/$REPORT_DIR":/report \  # Directorio para informes
+    owasp/dependency-check:latest \     # Imagen oficial
+    --scan /src \                       # Escanea todo el proyecto
+    --format HTML \                     # Genera informe HTML
+    --format JSON \                     # También en JSON
+    --enableExperimental                # Habilita análisis experimental
+```
+
+**flutter-dependency-analyzer.sh**:
+- Script complementario específico para Flutter
+- Usa comandos nativos de Flutter (`flutter pub deps`, `flutter pub outdated`)
+- Genera un informe HTML personalizado
+- Identifica paquetes de seguridad específicos
+
+#### 5. Integración sin Modificar el Proyecto
+
+La implementación se realizó sin modificar archivos existentes del proyecto:
+- ✅ No se tocó `pubspec.yaml`
+- ✅ No se alteró la estructura del proyecto
+- ✅ Los scripts son independientes y opcionales
+- ✅ Los informes se generan en una carpeta separada
+
+#### 6. Ventajas de este Enfoque
+
+1. **Separación de concerns**: Las herramientas de análisis están separadas del código de producción
+2. **CI/CD friendly**: Fácil de integrar en pipelines (ya existe Jenkinsfile)
+3. **Mantenimiento simple**: Actualizar es tan simple como usar `:latest` en Docker
+4. **Sin dependencias adicionales**: No aumenta el tamaño del proyecto Flutter
+5. **Análisis completo**: Examina TODO el proyecto, no solo dependencias Dart
+
+### Alternativas Consideradas pero Descartadas
+
+1. **Modificar pubspec.yaml**: No aplicable - OWASP DC no es un paquete Dart
+2. **Gradle plugin**: Solo analizaría la parte Android, no Flutter
+3. **GitHub Actions**: Requeriría cambios en el flujo de CI/CD existente
+4. **Instalación manual**: Menos portable y más complejo de mantener
+
+### Resultado Final
+
+La solución implementada proporciona:
+- ✅ Análisis de seguridad completo (Dart + Android + más)
+- ✅ Sin modificaciones al proyecto original
+- ✅ Fácil de usar y mantener
+- ✅ Portable entre diferentes entornos
+- ✅ Informes HTML visuales y fáciles de interpretar
