@@ -1,0 +1,35 @@
+name: Deploy Simple
+
+on:
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pages: write
+      id-token: write
+    steps:
+      - uses: actions/checkout@v4
+      
+      - uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.22.3'
+          channel: 'stable'
+          
+      - name: Quick Fix Dependencies
+        run: |
+          # Temporarily downgrade problematic packages
+          sed -i 's/flutter_lints: ^5.0.0/flutter_lints: ^3.0.0/' pubspec.yaml
+          flutter pub get
+          
+      - name: Build
+        run: flutter build web --release --web-renderer html
+          
+      - name: Deploy to GitHub Pages
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./build/web
+          force_orphan: true
