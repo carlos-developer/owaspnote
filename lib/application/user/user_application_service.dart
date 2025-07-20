@@ -8,6 +8,7 @@ import '../common/application_service.dart';
 class UserApplicationService extends ApplicationService {
   final UserRepository userRepository;
   final PasswordHasher passwordHasher;
+
   final AuthenticationService authenticationService;
 
   UserApplicationService({
