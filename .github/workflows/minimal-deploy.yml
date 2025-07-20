@@ -1,0 +1,26 @@
+name: Minimal Deploy
+
+on:
+  push:
+    branches: [ main ]
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+      
+      - uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.19.6'
+          
+      - run: flutter pub get
+      
+      - run: flutter build web
+          
+      - uses: JamesIves/github-pages-deploy-action@v4
+        with:
+          folder: build/web
