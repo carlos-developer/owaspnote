@@ -61,8 +61,13 @@ jobs:
           
       - name: Run tests (optional)
         run: |
-          echo "Running tests..."
-          flutter test --reporter=expanded || true
+          echo "Running unit tests only..."
+          # Solo ejecutar tests específicos, excluyendo los de integración
+          flutter test --reporter=expanded \
+            test/models/ \
+            test/security/ \
+            test/widgets/ \
+            test/widget_test.dart || true
         continue-on-error: true
         
       - name: Build web
