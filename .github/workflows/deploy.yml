@@ -21,11 +21,18 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
         
+      - name: Setup Java
+        uses: actions/setup-java@v3
+        with:
+          distribution: 'temurin'
+          java-version: '11'
+        
       - name: Setup Flutter
         uses: subosito/flutter-action@v2
         with:
-          flutter-version: '3.8.1'
+          flutter-version: '3.19.6'
           channel: 'stable'
+          cache: true
           
       - name: Build Web
         run: |
@@ -34,7 +41,8 @@ jobs:
           flutter build web --release \
             --web-renderer=canvaskit \
             --tree-shake-icons \
-            --pwa-strategy=offline-first
+            --pwa-strategy=offline-first \
+            --base-href=/${{ github.event.repository.name }}/
             
       - name: Add .nojekyll
         run: touch build/web/.nojekyll
