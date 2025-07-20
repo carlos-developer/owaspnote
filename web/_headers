@@ -1,0 +1,23 @@
+# Netlify Headers Configuration
+/*
+  X-Frame-Options: DENY
+  X-Content-Type-Options: nosniff
+  X-XSS-Protection: 1; mode=block
+  Referrer-Policy: strict-origin-when-cross-origin
+  Permissions-Policy: geolocation=(), microphone=(), camera=()
+  Content-Security-Policy: default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval'; style-src 'self' 'unsafe-inline'; img-src 'self' data: https:; font-src 'self'; connect-src 'self'; frame-ancestors 'none';
+
+# Cache static assets
+/assets/*
+  Cache-Control: public, max-age=31536000, immutable
+
+# Service Worker
+/flutter_service_worker.js
+  Cache-Control: no-cache, no-store, must-revalidate
+
+# Main app files
+/main.dart.js
+  Cache-Control: public, max-age=3600
+
+/index.html
+  Cache-Control: no-cache, no-store, must-revalidate
