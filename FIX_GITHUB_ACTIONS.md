@@ -24,6 +24,7 @@ Se actualizó el archivo `.github/workflows/deploy.yml` con los siguientes cambi
 
 ## 📋 Cambios Específicos
 
+### Configuración en YAML:
 ```yaml
 # Java setup agregado
 - name: Setup Java
@@ -39,8 +40,10 @@ Se actualizó el archivo `.github/workflows/deploy.yml` con los siguientes cambi
     flutter-version: '3.19.6'  # Actualizado desde 3.8.1
     channel: 'stable'
     cache: true                # Cache agregado
+```
 
-# Build con base-href
+### Comando de build con base-href:
+```bash
 flutter build web --release \
   --web-renderer=canvaskit \
   --tree-shake-icons \
