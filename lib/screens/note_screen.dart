@@ -174,8 +174,8 @@ class _NoteScreenState extends State<NoteScreen> {
                 ),
                 label: Text(_encryptContent ? 'Encrypted' : 'Not Encrypted'),
                 backgroundColor: _encryptContent
-                    ? Colors.green.withValues(alpha: 0.1)
-                    : Colors.orange.withValues(alpha: 0.1),
+                    ? Colors.green
+                    : Colors.orange,
               ),
             ),
             
@@ -192,7 +192,7 @@ class _NoteScreenState extends State<NoteScreen> {
             children: [
               // Switch de cifrado
               Container(
-                color: Theme.of(context).primaryColor.withValues(alpha: 0.05),
+                color: Theme.of(context).primaryColor,
                 child: SwitchListTile(
                   title: const Text('Encrypt this note'),
                   subtitle: const Text(
@@ -283,7 +283,7 @@ class _NoteScreenState extends State<NoteScreen> {
                       // Información de seguridad
                       if (_encryptContent)
                         Card(
-                          color: Colors.green.withValues(alpha: 0.1),
+                          color: Colors.green,
                           child: const Padding(
                             padding: EdgeInsets.all(12.0),
                             child: Row(
@@ -306,7 +306,7 @@ class _NoteScreenState extends State<NoteScreen> {
                         )
                       else
                         Card(
-                          color: Colors.orange.withValues(alpha: 0.1),
+                          color: Colors.orange,
                           child: const Padding(
                             padding: EdgeInsets.all(12.0),
                             child: Row(

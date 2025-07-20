@@ -187,7 +187,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
             child: Chip(
               avatar: const Icon(Icons.person, size: 18),
               label: Text(widget.user.username),
-              backgroundColor: Theme.of(context).primaryColor.withValues(alpha: 0.1),
+              backgroundColor: Theme.of(context).primaryColor,
             ),
           ),
           
