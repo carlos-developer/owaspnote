@@ -1,0 +1,2 @@
+# Directorio para certificados SSL/TLS
+# Los certificados reales deben ser agregados aquí para certificate pinning
