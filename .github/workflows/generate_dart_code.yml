@@ -1,0 +1,82 @@
+name: Generate Dart Code with Gemini
+
+on:
+  issues:
+    types: [opened]
+
+jobs:
+  generate_code:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.10'
+
+      - name: Install dependencies
+        run: pip install requests
+
+      - name: Generate and post Dart code
+        env:
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+          ISSUE_TITLE: ${{ github.event.issue.title }}
+          ISSUE_BODY: ${{ github.event.issue.body }}
+          ISSUE_NUMBER: ${{ github.event.issue.number }}
+          REPO: ${{ github.repository }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          # Asegúrate de que el directorio del script exista
+          mkdir -p .github/scripts
+          
+          # Copia el script Python aquí mismo o en un archivo separado
+          cat <<'EOF' > .github/scripts/generate_code.py
+import os
+import requests
+import json
+
+# Obtener variables de entorno
+api_key = os.getenv('GEMINI_API_KEY')
+issue_title = os.getenv('ISSUE_TITLE')
+issue_body = os.getenv('ISSUE_BODY')
+repo = os.getenv('REPO')
+issue_number = os.getenv('ISSUE_NUMBER')
+github_token = os.getenv('GITHUB_TOKEN')
+
+# Prompt para Gemini, pidiendo específicamente código Dart
+prompt = f"Genera una función o un widget de Dart para un proyecto de Flutter basado en la siguiente descripción. Proporciona solo el bloque de código, sin explicaciones adicionales.\n\nTítulo del issue: {issue_title}\nDescripción: {issue_body}"
+
+# URL y headers para la API de Gemini
+gemini_url = f'https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent?key={api_key}'
+headers = {'Content-Type': 'application/json'}
+data = {'contents': [{'parts': [{'text': prompt}]}]}
+
+# Realizar la solicitud a la API de Gemini
+response = requests.post(gemini_url, headers=headers, data=json.dumps(data))
+response.raise_for_status()
+
+# Extraer el código de la respuesta de Gemini
+code = response.json()['candidates'][0]['content']['parts'][0]['text']
+
+# Preparar el comentario para el issue de GitHub
+comment_body = {
+    'body': f'## ✨ Propuesta de código generada por Gemini\n\n```dart\n{code}\n```\n\n> **Nota:** Este código fue generado por inteligencia artificial y puede requerir revisión y ajustes.'
+}
+
+# URL y headers para la API de GitHub
+github_url = f'https://api.github.com/repos/{repo}/issues/{issue_number}/comments'
+github_headers = {
+    'Authorization': f'token {github_token}',
+    'Accept': 'application/vnd.github.v3+json'
+}
+
+# Publicar el comentario en el issue
+requests.post(github_url, headers=github_headers, data=json.dumps(comment_body))
+
+print("¡Código generado y publicado exitosamente!")
+EOF
+          
+          # Ejecutar el script Python
+          python .github/scripts/generate_code.py
