@@ -17,7 +17,7 @@ dependencies:
   local_auth: ^2.2.0
   
   # Network security
-  dio: ^5.4.0
+  dio: ^5.9.1
   
   # State management
   provider: ^6.1.1
